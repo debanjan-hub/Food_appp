@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Smart Canteen</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&display=swap">
+<style>
+:root{--bg:#f4f6f0;--card:#fff;--tx:#15271f;--mu:#5f7168;--gr:#1f7a4d;--gr2:#e3f1e8;--ye:#f2b632;--rd:#c8382b;--bd:#d9e0d6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1a15;--card:#182720;--tx:#eaf2ec;--mu:#98ada1;--gr:#4cc08a;--gr2:#1c3a2b;--bd:#2b3f35}}
+:root[data-theme="dark"]{--bg:#0f1a15;--card:#182720;--tx:#eaf2ec;--mu:#98ada1;--gr:#4cc08a;--gr2:#1c3a2b;--bd:#2b3f35}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+h1,h2,h3{font-family:"Bricolage Grotesque",system-ui,sans-serif;margin:0}
+header{padding:18px 16px 8px;max-width:960px;margin:auto}
+header h1{font-size:28px;font-weight:800}
+header p{margin:2px 0 0;color:var(--mu)}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--bd)}
+nav div{max-width:960px;margin:auto;display:flex;gap:4px;padding:8px 12px;overflow-x:auto}
+nav button{flex:1;white-space:nowrap;border:0;background:none;color:var(--mu);font:600 14px inherit;font-family:inherit;padding:9px 12px;border-radius:8px;cursor:pointer}
+nav button.on{background:var(--gr);color:#fff}
+main{max-width:960px;margin:auto;padding:14px 16px 40px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:10px}
+.chip{border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:20px;padding:6px 14px;cursor:pointer;white-space:nowrap;font:inherit}
+.chip.on{background:var(--ye);border-color:var(--ye);color:#15271f;font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.item{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:6px}
+.item b{font-size:15px}
+.meta{display:flex;align-items:center;gap:6px;color:var(--mu);font-size:13px}
+.dot{width:11px;height:11px;border:1.5px solid var(--gr);display:inline-flex;align-items:center;justify-content:center}
+.dot:after{content:"";width:5px;height:5px;border-radius:50%;background:var(--gr)}
+.dot.nv{border-color:var(--rd)}.dot.nv:after{background:var(--rd)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto}
+.price{font:800 18px "Bricolage Grotesque",system-ui,sans-serif}
+.btn{border:0;background:var(--gr);color:#fff;border-radius:8px;padding:8px 14px;font:600 14px inherit;font-family:inherit;cursor:pointer}
+.btn.ghost{background:var(--gr2);color:var(--gr)}
+.btn:disabled{opacity:.5;cursor:default}
+.qty{display:inline-flex;align-items:center;gap:8px}
+.qty button{width:28px;height:28px;border-radius:7px;border:1px solid var(--gr);background:var(--card);color:var(--gr);font-size:16px;cursor:pointer}
+.panel{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px;margin-bottom:12px}
+.line{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px dashed var(--bd)}
+.line:last-child{border:0}
+.total{font:800 20px "Bricolage Grotesque",system-ui,sans-serif}
+label{display:block;font-weight:600;margin:10px 0 4px}
+input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.note{font-size:12px;color:var(--mu);margin-top:6px}
+.err{color:var(--rd);font-size:13px;margin-top:6px;min-height:18px}
+.ticket{background:var(--ye);color:#15271f;border-radius:12px;padding:18px;position:relative;margin-bottom:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:center}
+.ticket:before{content:"";position:absolute;left:50%;top:14px;bottom:14px;border-left:2px dashed #15271f55}
+.ticket small{display:block;font-weight:600;opacity:.75}
+.ticket strong{font:800 40px "Bricolage Grotesque",system-ui,sans-serif;line-height:1.1}
+.ov{position:fixed;inset:0;background:#000a;display:flex;align-items:center;justify-content:center;z-index:20}
+.ov div{background:var(--card);padding:26px 34px;border-radius:12px;text-align:center}
+.spin{width:34px;height:34px;border:4px solid var(--gr2);border-top-color:var(--gr);border-radius:50%;margin:0 auto 10px;animation:s 1s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}}
+.q{padding:12px 0;border-bottom:1px dashed var(--bd)}
+.q:last-of-type{border:0}
+.rate{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.rate button{flex:1;min-width:58px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);border-radius:8px;padding:7px 4px;cursor:pointer;font:inherit;font-size:12px}
+.rate button b{display:block;font-size:17px}
+.rate button.on{background:var(--gr);border-color:var(--gr);color:#fff}
+.rate button.on.low{background:var(--rd);border-color:var(--rd)}
+.tag{font-size:12px;background:var(--gr2);color:var(--gr);padding:2px 8px;border-radius:10px;font-weight:600}
+.empty{text-align:center;color:var(--mu);padding:36px 10px}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--ye);outline-offset:2px}
+</style></head><body>
+<header><h1>Smart Canteen</h1><p>Pick your food, pay, and get your token and seat.</p></header>
+<nav><div id="nav"></div></nav>
+<main id="app"></main>
+<script>
+const MENU=`Paneer Butter Masala|Indian|180|1
+Dal Tadka|Indian|110|1
+Chole Bhature|Indian|90|1
+Veg Biryani|Indian|150|1
+Chicken Biryani|Indian|250|0
+Chicken Curry|Indian|220|0
+Masala Dosa|Indian|80|1
+Idli Sambar (3 pcs)|Indian|50|1
+Veg Hakka Noodles|Chinese|120|1
+Schezwan Fried Rice|Chinese|130|1
+Veg Manchurian|Chinese|130|1
+Chilli Paneer|Chinese|170|1
+Chicken Fried Rice|Chinese|160|0
+Chicken Manchurian|Chinese|190|0
+White Sauce Pasta|Continental|160|1
+Penne Arrabbiata|Continental|150|1
+Grilled Veg Sandwich|Continental|90|1
+Margherita Pizza|Continental|200|1
+Chicken Burger|Continental|180|0
+Fish and Chips|Continental|350|0
+Phulka|Rotis|10|1
+Tandoori Roti|Rotis|12|1
+Plain Paratha|Rotis|30|1
+Butter Naan|Rotis|40|1
+Garlic Naan|Rotis|55|1
+Aloo Paratha|Rotis|60|1
+Samosa (2 pcs)|Fried|20|1
+Vada Pav|Fried|25|1
+Veg Pakora|Fried|60|1
+French Fries|Fried|80|1
+Onion Rings|Fried|90|1
+Chicken Nuggets (8 pcs)|Fried|140|0
+Fried Chicken (6 pcs)|Fried|320|0
+Masala Chai|Drinks & Sweets|15|1
+Fresh Lime Soda|Drinks & Sweets|40|1
+Cold Coffee|Drinks & Sweets|70|1
+Gulab Jamun (2 pcs)|Drinks & Sweets|45|1
+Ice Cream Scoop|Drinks & Sweets|60|1`.split("\n").map(l=>{const [n,c,p,v]=l.split("|");return{n,c,p:+p,v:v==="1"}});
+const CATS=["All",...new Set(MENU.map(m=>m.c))];
+const QS=[
+["Food","How was the taste of your food?"],
+["Food","How fresh and hot was the food when served?"],
+["Food","Was the portion size worth the price?"],
+["Food","How would you rate the variety on the menu?"],
+["Hygiene","How clean were the tables, seats and floor?"],
+["Hygiene","How hygienic was the serving staff (gloves, caps, clean uniforms)?"],
+["Hygiene","How clean were the plates, glasses, washbasins and surroundings?"]];
+const LBL=["Worst","Bad","Good","Very good","Excellent"];
+const mem={};
+const ls={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return mem[k]??d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){mem[k]=v}}};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const S={tab:"menu",cat:"All",cart:{},last:null,fb:{},fbDone:false,busy:false};
+const busySeats=new Set();while(busySeats.size<12)busySeats.add(1+Math.floor(Math.random()*40));
+const TABS=[["menu","Menu"],["order","Order"],["history","Order history"],["feedback","Feedback"]];
+const cartCount=()=>Object.values(S.cart).reduce((a,b)=>a+b,0);
+const cartTotal=()=>Object.entries(S.cart).reduce((a,[n,q])=>a+q*MENU.find(m=>m.n===n).p,0);
+function go(t){S.tab=t;draw()}
+function add(n,d){S.cart[n]=(S.cart[n]||0)+d;if(S.cart[n]<=0)delete S.cart[n];draw()}
+function draw(){
+ document.getElementById("nav").innerHTML=TABS.map(([k,l])=>`<button class="${S.tab===k?"on":""}" onclick="go('${k}')">${l}${k==="order"&&cartCount()?` (${cartCount()})`:""}</button>`).join("");
+ const a=document.getElementById("app");
+ a.innerHTML=({menu:vMenu,order:vOrder,history:vHist,feedback:vFb})[S.tab]();
+}
+function vMenu(){
+ const list=MENU.filter(m=>S.cat==="All"||m.c===S.cat);
+ return `<div class="chips">${CATS.map(c=>`<button class="chip ${S.cat===c?"on":""}" onclick="S.cat='${c.replace(/'/g,"\\'")}';draw()">${c}</button>`).join("")}</div>
+ <div class="grid">${list.map(m=>{const q=S.cart[m.n]||0;const k=m.n.replace(/'/g,"\\'");return `<div class="item"><b>${m.n}</b>
+ <div class="meta"><span class="dot ${m.v?"":"nv"}"></span>${m.v?"Veg":"Non-veg"} · ${m.c}</div>
+ <div class="row"><span class="price">₹${m.p}</span>${q?`<span class="qty"><button onclick="add('${k}',-1)" aria-label="Remove one">−</button><b>${q}</b><button onclick="add('${k}',1)" aria-label="Add one">+</button></span>`:`<button class="btn ghost" onclick="add('${k}',1)">Add</button>`}</div></div>`}).join("")}</div>
+ ${cartCount()?`<div class="panel" style="margin-top:14px;display:flex;justify-content:space-between;align-items:center"><span><b>${cartCount()} items</b> · ₹${cartTotal()}</span><button class="btn" onclick="go('order')">Go to order</button></div>`:""}`;
+}
+function vOrder(){
+ if(S.last&&!cartCount())return vDone();
+ if(!cartCount())return `<div class="empty">Your cart is empty.<br><br><button class="btn" onclick="go('menu')">Browse menu</button></div>`;
+ return `<div class="panel"><h3>Your order</h3>${Object.entries(S.cart).map(([n,q])=>{const m=MENU.find(x=>x.n===n);const k=n.replace(/'/g,"\\'");return `<div class="line"><span>${n}<br><span class="note">₹${m.p} each</span></span><span class="qty"><button onclick="add('${k}',-1)" aria-label="Remove one">−</button><b>${q}</b><button onclick="add('${k}',1)" aria-label="Add one">+</button></span><b>₹${m.p*q}</b></div>`}).join("")}
+ <div class="line"><b>Total</b><span class="total">₹${cartTotal()}</span></div></div>
+ <div class="panel"><h3>Student details</h3><div class="two"><div><label for="nm">Name</label><input id="nm" autocomplete="name"></div><div><label for="sid">Student ID</label><input id="sid"></div></div>
+ <h3 style="margin-top:16px">Payment</h3><div class="note">Prototype only. No real money moves and nothing is stored.</div>
+ <label for="pm">Method</label><select id="pm" onchange="payFields()"><option value="UPI">UPI</option><option value="Card">Debit / Credit card</option><option value="Netbanking">Net banking</option><option value="Counter">Pay at counter</option></select>
+ <div id="pf"></div><div class="err" id="er"></div>
+ <button class="btn" style="width:100%;padding:12px;margin-top:6px" onclick="pay()">Pay ₹${cartTotal()} and get token</button></div>`;
+}
+function payFields(){
+ const m=document.getElementById("pm").value;
+ document.getElementById("pf").innerHTML=m==="UPI"?`<label for="upi">UPI ID</label><input id="upi" placeholder="name@bank">`:m==="Card"?`<label for="cn">Card number</label><input id="cn" inputmode="numeric" maxlength="19" placeholder="1234 5678 9012 3456"><div class="two"><div><label for="ex">Expiry</label><input id="ex" placeholder="MM/YY" maxlength="5"></div><div><label for="cv">CVV</label><input id="cv" type="password" maxlength="3" inputmode="numeric"></div></div>`:m==="Netbanking"?`<label for="bk">Bank</label><select id="bk"><option>State Bank of India</option><option>HDFC Bank</option><option>ICICI Bank</option><option>Axis Bank</option></select>`:`<div class="note">Show your token at the counter and pay there.</div>`;
+}
+function pay(){
+ const v=id=>{const e=document.getElementById(id);return e?e.value.trim():null};
+ const m=v("pm"),er=document.getElementById("er");
+ let e="";
+ if(!v("nm")||!v("sid"))e="Enter your name and student ID.";
+ else if(m==="UPI"&&!/^[\w.\-]{2,}@[\w]{2,}$/.test(v("upi")))e="Enter a valid UPI ID, like name@bank.";
+ else if(m==="Card"&&(v("cn").replace(/\s/g,"").length<12||!/^\d\d\/\d\d$/.test(v("ex"))||v("cv").length<3))e="Check the card number, expiry (MM/YY) and CVV.";
+ if(e){er.textContent=e;return}
+ const name=v("nm"),sid=v("sid");
+ S.busy=true;
+ const o=document.createElement("div");o.className="ov";o.innerHTML=`<div><div class="spin"></div><b>Processing payment…</b></div>`;document.body.appendChild(o);
+ setTimeout(()=>{
+  o.remove();S.busy=false;
+  const h=ls.get("sc_hist",[]);
+  const tk=ls.get("sc_tok",0)+1;ls.set("sc_tok",tk);
+  const taken=new Set([...busySeats,...(S.mySeats||[])]);let seat=1;while(taken.has(seat)&&seat<40)seat++;
+  (S.mySeats=S.mySeats||[]).push(seat);
+  const ord={token:"T"+String(tk).padStart(3,"0"),seat:"S"+seat,name,sid,method:m,ts:Date.now(),total:cartTotal(),items:Object.entries(S.cart).map(([n,q])=>({n,q,p:MENU.find(x=>x.n===n).p}))};
+  h.unshift(ord);ls.set("sc_hist",h);S.last=ord;S.cart={};draw();scrollTo(0,0);
+ },1600);
+}
+function vDone(){const o=S.last;return `<div class="ticket"><div><small>Your token</small><strong>${o.token}</strong></div><div><small>Your seat</small><strong>${o.seat}</strong></div></div>
+ <div class="panel"><b>${o.method==="Counter"?"Order placed. Pay ₹"+o.total+" at the counter.":"Payment of ₹"+o.total+" received."}</b><div class="note">Thanks, ${esc(o.name)}. Show your token when your number is called, then go to your seat.</div>
+ ${o.items.map(i=>`<div class="line"><span>${i.q} × ${esc(i.n)}</span><span>₹${i.q*i.p}</span></div>`).join("")}</div>
+ <button class="btn" onclick="S.last=null;go('menu')">Order more</button> <button class="btn ghost" onclick="go('feedback')">Give feedback</button>`}
+function vHist(){
+ const h=ls.get("sc_hist",[]);
+ if(!h.length)return `<div class="empty">No orders yet.<br><br><button class="btn" onclick="go('menu')">Order your first meal</button></div>`;
+ const sum=h.reduce((a,o)=>a+o.total,0);
+ return `<div class="panel"><b>${h.length} orders</b> · ₹${sum} spent in total</div>`+h.map(o=>`<div class="panel"><div class="line"><b>${new Date(o.ts).toLocaleString([], {dateStyle:"medium",timeStyle:"short"})}</b><span><span class="tag">Token ${o.token}</span> <span class="tag">Seat ${o.seat}</span></span></div>
+ ${o.items.map(i=>`<div class="line"><span>${i.q} × ${esc(i.n)} <span class="note">@ ₹${i.p}</span></span><span>₹${i.q*i.p}</span></div>`).join("")}
+ <div class="line"><span class="note">Paid by ${esc(o.method)}</span><b>₹${o.total}</b></div></div>`).join("");
+}
+function vFb(){
+ if(S.fbDone)return `<div class="empty"><h2>Thank you!</h2><p>Your feedback helps the canteen improve food and hygiene.</p><button class="btn" onclick="S.fbDone=false;S.fb={};draw()">Give more feedback</button></div>`;
+ return `<div class="panel"><h3>Tell us about the canteen</h3><div class="note">Rate each question from 1 (worst) to 5 (excellent). If you rate 1, 2 or 3, tell us why.</div>
+ ${QS.map(([g,q],i)=>{const f=S.fb[i]||{};return `<div class="q"><span class="tag">${g}</span> <b>${i+1}. ${q}</b>
+ <div class="rate">${LBL.map((l,j)=>`<button class="${f.r===j+1?"on":""} ${j<3?"low":""}" onclick="rate(${i},${j+1})"><b>${j+1}</b>${l}</button>`).join("")}</div>
+ ${f.r&&f.r<=3?`<label for="w${i}">Why did you give ${f.r}?</label><textarea id="w${i}" rows="2" oninput="S.fb[${i}].w=this.value" placeholder="Tell us what went wrong">${esc(f.w||"")}</textarea>`:""}</div>`}).join("")}
+ <label for="cm">Anything else? (optional)</label><textarea id="cm" rows="2"></textarea>
+ <div class="err" id="fe"></div><button class="btn" style="width:100%;padding:12px" onclick="sendFb()">Submit feedback</button></div>`;
+}
+function rate(i,r){S.fb[i]=Object.assign(S.fb[i]||{},{r});draw()}
+function sendFb(){
+ for(let i=0;i<QS.length;i++){const f=S.fb[i];
+  if(!f||!f.r){fe("Please rate question "+(i+1)+".");return}
+  if(f.r<=3&&!(f.w||"").trim()){fe("Please tell us why you gave "+f.r+" for question "+(i+1)+".");return}}
+ const all=ls.get("sc_fb",[]);
+ all.push({ts:Date.now(),answers:QS.map((q,i)=>({q:q[1],r:S.fb[i].r,why:S.fb[i].w||""})),comment:document.getElementById("cm").value});
+ ls.set("sc_fb",all);S.fbDone=true;draw();scrollTo(0,0);
+}
+function fe(t){document.getElementById("fe").textContent=t}
+draw();
+</script></body></html>
